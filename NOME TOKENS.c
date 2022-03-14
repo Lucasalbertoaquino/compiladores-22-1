@@ -69,11 +69,11 @@ int falhar()
 {
 	switch(estado)
 	{
-	case 0: partida = 9; break;
+	case 0: partida = 9; break; //se não for relop testa se é logop
 
-	case 9: partida = 12; break;
+	case 9: partida = 13; break; //se não for logop testa se é ariop
 
-	case 12: partida = 20; break;
+	case 13: partida = 18; break; //se não for ariop testa se é
 
 	case 20: partida = 25; break;
 
@@ -198,40 +198,82 @@ Token proximo_token()
                     estado = falhar();
                 }
                 break;
+            case 10:
+                cont_sim_lido++;
+                printf("<logop, AND>\n");
+                token.nome_token = LOGOP;
+                token.atributo = AND;
+                estado = 0;
+                return(token);
+                break;
+            case 11:
+                cont_sim_lido++;
+                printf("<logop, OR>\n");
+                token.nome_token = LOGOP;
+                token.atributo = OR;
+                estado = 0;
+                return(token);
+                break;
+            case 12:
+                cont_sim_lido++;
+                printf("<logop, NOT>\n");
+                token.nome_token = LOGOP;
+                token.atributo = NOT;
+                estado = 0;
+                return(token);
+                break;
             //fim subrotina logop
 
             //inicio subrotina ariop
-            case 10:
+            case 13:
                 c = code[cont_sim_lido];
                 if((c == ' ')||(c == '\n'))
                 {
                     estado = 0;
                     cont_sim_lido++;
                 }
-                else if(c == 'and') estado = 10;
-                else if(c == 'or') estado = 11;
-                else if(c == 'not') estado = 12;
+                else if(c == '+') estado = 14;
+                else if(c == '-') estado = 15;
+                else if(c == '*') estado = 16;
+                else if(c == 'div') estado = 17;
                 else
                 {
                     estado = falhar();
                 }
+                break;
+            case 14:
+                cont_sim_lido++;
+                printf("<ariop, ADD>\n");
+                token.nome_token = ARIOP;
+                token.atributo = ADD;
+                estado = 0;
+                return(token);
+                break;
+            case 15:
+                cont_sim_lido++;
+                printf("<ariop, SUB>\n");
+                token.nome_token = ARIOP;
+                token.atributo = SUB;
+                estado = 0;
+                return(token);
+                break;
+            case 16:
+                cont_sim_lido++;
+                printf("<ariop, MULT>\n");
+                token.nome_token = ARIOP;
+                token.atributo = MULT;
+                estado = 0;
+                return(token);
+                break;
+            case 17:
+                cont_sim_lido++;
+                printf("<ariop, DIV>\n");
+                token.nome_token = ARIOP;
+                token.atributo = DIV;
+                estado = 0;
+                return(token);
                 break;
             //fim subrotina ariop
-            case 11:
-                c = code[cont_sim_lido];
-                if((c == ' ')||(c == '\n'))
-                {
-                    estado = 0;
-                    cont_sim_lido++;
-                }
-                else if(c == 'and') estado = 10;
-                else if(c == 'or') estado = 11;
-                else if(c == 'not') estado = 12;
-                else
-                {
-                    estado = falhar();
-                }
-                break;
         }
 
 	}
