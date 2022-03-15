@@ -7,24 +7,23 @@
 #define NUMERO 261;
 #define ARIOP 262;
 #define DELIM 263;
-#define LOGOP 264;
+#define AND 264;
+#define OR 265;
+#define NOT 266;
 
 
 //ATRIBUTOS
-#define LT 265;
-#define LE 266;
-#define EQ 267;
-#define NE 268;
-#define GT 269;
-#define GE 270;
+#define LT 267;
+#define LE 268;
+#define EQ 269;
+#define NE 270;
+#define GT 271;
+#define GE 272;
 
-#define ADD 271;
-#define SUB 272;
-#define MULT 273;
-#define DIV 274;
-#define AND 275;
-#define OR 276;
-#define NOT 277;
+#define ADD 273;
+#define SUB 274;
+#define MULT 275;
+#define DIV 276;
 
 struct Token{
  int nome_token;
@@ -69,11 +68,11 @@ int falhar()
 {
 	switch(estado)
 	{
-	case 0: partida = 9; break; //se não for relop testa se é logop
+	case 0: partida = 9; break; //se não for relop testa se é ariop
 
-	case 9: partida = 13; break; //se não for logop testa se é ariop
+	case 9: partida = 13; break; //se não for ariop testa se é
 
-	case 13: partida = 18; break; //se não for ariop testa se é
+	case 13: partida = 18; break;
 
 	case 20: partida = 25; break;
 
@@ -182,50 +181,8 @@ Token proximo_token()
                 break;
             //fim subrotina relop
 
-            //inicio subrotina logop
-            case 9:
-                c = code[cont_sim_lido];
-                if((c == ' ')||(c == '\n'))
-                {
-                    estado = 0;
-                    cont_sim_lido++;
-                }
-                else if(c == 'and') estado = 10;
-                else if(c == 'or') estado = 11;
-                else if(c == 'not') estado = 12;
-                else
-                {
-                    estado = falhar();
-                }
-                break;
-            case 10:
-                cont_sim_lido++;
-                printf("<logop, AND>\n");
-                token.nome_token = LOGOP;
-                token.atributo = AND;
-                estado = 0;
-                return(token);
-                break;
-            case 11:
-                cont_sim_lido++;
-                printf("<logop, OR>\n");
-                token.nome_token = LOGOP;
-                token.atributo = OR;
-                estado = 0;
-                return(token);
-                break;
-            case 12:
-                cont_sim_lido++;
-                printf("<logop, NOT>\n");
-                token.nome_token = LOGOP;
-                token.atributo = NOT;
-                estado = 0;
-                return(token);
-                break;
-            //fim subrotina logop
-
             //inicio subrotina ariop
-            case 13:
+            case 9:
                 c = code[cont_sim_lido];
                 if((c == ' ')||(c == '\n'))
                 {
@@ -241,7 +198,7 @@ Token proximo_token()
                     estado = falhar();
                 }
                 break;
-            case 14:
+            case 10:
                 cont_sim_lido++;
                 printf("<ariop, ADD>\n");
                 token.nome_token = ARIOP;
@@ -249,7 +206,7 @@ Token proximo_token()
                 estado = 0;
                 return(token);
                 break;
-            case 15:
+            case 11:
                 cont_sim_lido++;
                 printf("<ariop, SUB>\n");
                 token.nome_token = ARIOP;
@@ -257,7 +214,7 @@ Token proximo_token()
                 estado = 0;
                 return(token);
                 break;
-            case 16:
+            case 12:
                 cont_sim_lido++;
                 printf("<ariop, MULT>\n");
                 token.nome_token = ARIOP;
@@ -265,7 +222,7 @@ Token proximo_token()
                 estado = 0;
                 return(token);
                 break;
-            case 17:
+            case 13:
                 cont_sim_lido++;
                 printf("<ariop, DIV>\n");
                 token.nome_token = ARIOP;
