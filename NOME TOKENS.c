@@ -3,27 +3,32 @@
 #define THEN  257;
 #define ELSE  258;
 #define RELOP  259;
-#define ID  260;
+#define ID 260;
 #define NUMERO 261;
 #define ARIOP 262;
 #define DELIM 263;
 #define AND 264;
 #define OR 265;
 #define NOT 266;
+#define COMENTARIO 267 
 
 
 //ATRIBUTOS
-#define LT 267;
-#define LE 268;
-#define EQ 269;
-#define NE 270;
-#define GT 271;
-#define GE 272;
+#define LT 268;
+#define LE 269;
+#define EQ 270;
+#define NE 271;
+#define GT 272;
+#define GE 273;
 
-#define ADD 273;
-#define SUB 274;
-#define MULT 275;
-#define DIV 276;
+#define ADD 274;
+#define SUB 275;
+#define MULT 276;
+#define DIV 277;
+
+#define OKEY 278;
+#define CKEY 279;
+#define BAR 280;
 
 struct Token{
  int nome_token;
@@ -70,11 +75,11 @@ int falhar()
 	{
 	case 0: partida = 9; break; //se não for relop testa se é ariop
 
-	case 9: partida = 13; break; //se não for ariop testa se é
+	case 9: partida = 16; break; //se não for ariop testa se é identificador
 
-	case 13: partida = 18; break;
+	case 16: partida = 18; break; //se não for identificador testa se é numero
 
-	case 20: partida = 25; break;
+	case 18: partida = 20; break; //se não for numero testa se é comentário
 
 	case 25:
 		//retornar msg de erro
@@ -189,10 +194,10 @@ Token proximo_token()
                     estado = 0;
                     cont_sim_lido++;
                 }
-                else if(c == '+') estado = 14;
-                else if(c == '-') estado = 15;
-                else if(c == '*') estado = 16;
-                else if(c == 'div') estado = 17;
+                else if(c == '+') estado = 10;
+                else if(c == '-') estado = 11;
+                else if(c == '*') estado = 12;
+                else if(c == 'd') estado = 13;
                 else
                 {
                     estado = falhar();
@@ -224,13 +229,130 @@ Token proximo_token()
                 break;
             case 13:
                 cont_sim_lido++;
+                c = code[cont_sim_lido];
+                if(c == 'i') estado = 14;
+                else estado = 0;
+                break;
+            case 14:
+                cont_sim_lido++;
+                c = code[cont_sim_lido];
+                if(c == 'v') estado = 15;
+                else estado = 0;
+                break;
+            case 15:
+                cont_sim_lido++;
                 printf("<ariop, DIV>\n");
                 token.nome_token = ARIOP;
                 token.atributo = DIV;
                 estado = 0;
                 return(token);
                 break;
+
             //fim subrotina ariop
+
+            //início subrotina identificador
+            case 16:
+                c = code[cont_sim_lido];
+                if((c == ' ')||(c == '\n'))
+                {
+                    estado = 0;
+                    cont_sim_lido++;
+                }
+                else if(97<'c'<122) estado = 17;
+                else
+                {
+                    estado = falhar();
+                }
+                break;
+            case 17:
+                cont_sim_lido++;
+                c = code[cont_sim_lido];
+                if(48<'c'<57 || 65<'c'<90 || 97<'c'<122) estado = 17;
+                else{
+                    printf("<identificador, 1>\n");
+                    token.nome_token = ID;
+                    token.atributo = 1;
+                    estado = 0;
+                    return(token);
+                }
+                break;
+            //fim subrotina identificador
+
+            //início subrotina numero
+            case 18:
+                c = code[cont_sim_lido];
+                if((c == ' ')||(c == '\n'))
+                {
+                    estado = 0;
+                    cont_sim_lido++;
+                }
+                else if(48<'c'<57) estado = 19;
+                else
+                {
+                    estado = falhar();
+                }
+                break;
+            case 19:
+                cont_sim_lido++;
+                c = code[cont_sim_lido];
+                if(48<'c'<57) estado = 19;
+                else{
+                    printf("<numero, %d>\n", c);
+                    token.nome_token = NUMERO;
+                    token.atributo = c;
+                    estado = 0;
+                    return(token);
+                }
+                break;
+            //fim subrotina numero
+
+            //início subrotina comentario
+            case 20:
+                c = code[cont_sim_lido];
+                if((c == ' ')||(c == '\n'))
+                {
+                    estado = 0;
+                    cont_sim_lido++;
+                }
+                else if(c=="{") estado = 21;
+                else if(c=="}") estado = 22;
+                else if(c=="/") estado = 23;
+                else
+                {
+                    estado = falhar();
+                }
+                break;
+            case 21:
+                cont_sim_lido++;
+                printf("<{, >\n");
+                token.nome_token = COMENTARIO;
+                token.atributo = OKEY;
+                estado = 0;
+                return(token);
+                break;
+            case 22:
+                cont_sim_lido++;
+                printf("<}, >\n");
+                token.nome_token = COMENTARIO;
+                token.atributo = CKEY;
+                estado = 0;
+                return(token);
+                break;
+            case 23:
+                cont_sim_lido++;
+                c = code[cont_sim_lido];
+                if(c == '/') estado = 24;
+                else estado = 0;
+                break;
+            case 24:
+                cont_sim_lido++;
+                printf("<//, >\n");
+                token.nome_token = COMENTARIO;
+                token.atributo = BAR;
+                estado = 0;
+                return(token);
+                break;
+            //fim subrotina comentario
         }
 
 	}
