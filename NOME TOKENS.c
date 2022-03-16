@@ -1,3 +1,7 @@
+#include <ctype.h>
+#include <stdio.h>
+
+
 //NOME TOKENS
 #define IF  256;
 #define THEN  257;
@@ -10,7 +14,7 @@
 #define AND 264;
 #define OR 265;
 #define NOT 266;
-#define COMENTARIO 267 
+#define COMENTARIO 267 //COMPLETAR TODAS
 
 
 //ATRIBUTOS
@@ -33,8 +37,8 @@
 char letras[] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','w','x','y','z',
                 'A', 'B','C','D','E','F','G','H', 'I','J','K','L','M','N','O','P','Q','R','S','T','U','W','X','Y','Z'};
 char numeros[] = ['1','2','3','4','5','6','7','7','8','9','0'];
-char identificadores[200][100];
-char palavrasReservadas[] = {'WHILE', 'DO', 'IF'}; //Acrescentar todas que estão do arquivo da prof (menos os simbolos)
+char identificadores[200][2];
+char palavrasReservadas[200] = {{'WHILE', 'DO', 'IF'}; //Acrescentar todas que estão do arquivo da prof (menos os simbolos)
 
 struct Token{
  int nome_token;
@@ -288,14 +292,24 @@ Token proximo_token()
                     estado = 17;
                 }
                 else{
-                    int i;
-                    for(i=0; i<200; i++){
-                        if(strcmp(identificadores[i], string) != 0){ //comparar a string que achamos com os identificadores
-                            printf("<identificador, >\n"); //COMPLETAR
-                            token.nome_token = ID;
-                            token.atributo = 1;
+                    int j;
+                    for(j=0; j<200; j++){
+                        if(strcmp(palavrasReservadas[j], string) != 0){ //comparar a string que achamos com as oalavras reservadas
+                            printf("<%s, >\n", palavrasReservadas[j]);
+                            token.nome_token = toupper(palavrasReservadas[j]);
+                            token.atributo = NULL;
                             estado = 0;
                             return(token);
+                            break;
+                        }
+                        if(strcmp(identificadores[j][0], string) != 0){ //comparar a string que achamos com os identificadores
+                            identificadores[j][0] = "linha correspondente"; //Salva a linha correspondente no array
+                            printf("<identificador, %s>\n", identificadores[j][0]);
+                            token.nome_token = ID;
+                            token.atributo = null;
+                            estado = 0;
+                            return(token);
+                            break;
                         }
                     }
                 }
@@ -331,9 +345,9 @@ Token proximo_token()
                     estado = 19;
                 }
                 else{
-                    printf("<numero, >\n"); //COMPLETAR
+                    printf("<numero, %s>\n", string);
                     token.nome_token = NUMERO;
-                    token.atributo = c;
+                    token.atributo = string;
                     estado = 0;
                     return(token);
                 }
