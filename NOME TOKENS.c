@@ -34,7 +34,7 @@ char letras[] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'
                 'A', 'B','C','D','E','F','G','H', 'I','J','K','L','M','N','O','P','Q','R','S','T','U','W','X','Y','Z'};
 char numeros[] = ['1','2','3','4','5','6','7','7','8','9','0'];
 char identificadores[200][100];
-char palavrasReservadas[][] = {{'while', WHILE}, {'do', DO}, {'if', IF}}; //Acrescentar todas que estão do arquivo da prof (menos os simbolos)
+char palavrasReservadas[] = {'WHILE', 'DO', 'IF'}; //Acrescentar todas que estão do arquivo da prof (menos os simbolos)
 
 struct Token{
  int nome_token;
