@@ -6,7 +6,7 @@
 #define ID 260;
 #define NUMERO 261;
 #define ARIOP 262;
-#define DELIM 263;
+#define WHILE 263;
 #define AND 264;
 #define OR 265;
 #define NOT 266;
@@ -29,6 +29,12 @@
 #define OKEY 278;
 #define CKEY 279;
 #define BAR 280;
+
+char letras[] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','w','x','y','z',
+                'A', 'B','C','D','E','F','G','H', 'I','J','K','L','M','N','O','P','Q','R','S','T','U','W','X','Y','Z'};
+char numeros[] = ['1','2','3','4','5','6','7','7','8','9','0'];
+char identificadores[200][100];
+char palavrasReservadas[][] = {{'while', WHILE}, {'do', DO}, {'if', IF}}; //Acrescentar todas que estão do arquivo da prof (menos os simbolos)
 
 struct Token{
  int nome_token;
@@ -96,6 +102,8 @@ Token proximo_token()
 {
 	Token token;
 	char c;
+    char string[200]; //para armazenar os caracteres lidos para ver a string final
+    int i = 0; //para iterar o array string
 	while(code[cont_sim_lido] != EOF){
 		switch(estado){
 
@@ -258,7 +266,12 @@ Token proximo_token()
                     estado = 0;
                     cont_sim_lido++;
                 }
-                else if(97<'c'<122) estado = 17;
+                int posicao = strcspn(letras, c); //testar se o caracter esta presente no array de letras
+                else if(posicao<strlen(letras)){ //essa função quando não encontra o caracter ou numero encontrado retorna o tamanho do array entao testo pra ver se o valor é menor q o tam do array
+                    estado = 17;
+                    string[i] = c;
+                    i++;
+                }
                 else
                 {
                     estado = falhar();
@@ -267,13 +280,24 @@ Token proximo_token()
             case 17:
                 cont_sim_lido++;
                 c = code[cont_sim_lido];
-                if(48<'c'<57 || 65<'c'<90 || 97<'c'<122) estado = 17;
+                int posicaoLetras = strcspn(letras, c); //testar se o caracter esta presente no array de letras
+                int posicaoNumeros = strcspn(numeros, c); //testar se o numero esta presente no array de numeros
+                if(posicaoLetras<strlen(letras) || (posicaoNumeros<strlen(numeros)){ //essa função quando não encontra o caracter ou numero encontrado retorna o tamanho do array entao testo pra ver se o valor é menor q o tam do array
+                    string[i] = c; //adiciona no array string
+                    i++; // vai para a proxima prosição
+                    estado = 17;
+                }
                 else{
-                    printf("<identificador, 1>\n");
-                    token.nome_token = ID;
-                    token.atributo = 1;
-                    estado = 0;
-                    return(token);
+                    int i;
+                    for(i=0; i<200; i++){
+                        if(strcmp(identificadores[i], string) != 0){ //comparar a string que achamos com os identificadores
+                            printf("<identificador, >\n"); //COMPLETAR
+                            token.nome_token = ID;
+                            token.atributo = 1;
+                            estado = 0;
+                            return(token);
+                        }
+                    }
                 }
                 break;
             //fim subrotina identificador
@@ -286,7 +310,12 @@ Token proximo_token()
                     estado = 0;
                     cont_sim_lido++;
                 }
-                else if(48<'c'<57) estado = 19;
+                int posicaoNumeros = strcspn(numeros, c); //testar se o caracter esta presente no array de letras
+                else if(posicaoNumeros<strlen(numeros)){ //essa função quando não encontra o caracter ou numero retorna o tamanho do array entao testo pra ver se o valor é menor q o tam do array
+                    estado = 19;
+                    string[i] = c;
+                    i++;
+                }
                 else
                 {
                     estado = falhar();
@@ -295,9 +324,14 @@ Token proximo_token()
             case 19:
                 cont_sim_lido++;
                 c = code[cont_sim_lido];
-                if(48<'c'<57) estado = 19;
+                int posicaoNumeros = strcspn(numeros, c); //testar se o numero esta presente no array de numeros
+                if((posicaoNumeros<strlen(numeros)){ //essa função quando não encontra o numero  retorna o tamanho do array entao testo pra ver se o valor é menor q o tam do array
+                    string[i] = c; //adiciona no array string
+                    i++; // vai para a proxima prosição
+                    estado = 19;
+                }
                 else{
-                    printf("<numero, %d>\n", c);
+                    printf("<numero, >\n"); //COMPLETAR
                     token.nome_token = NUMERO;
                     token.atributo = c;
                     estado = 0;
