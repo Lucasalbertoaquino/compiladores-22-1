@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <stdio.h>
+#include <string.h>
 
 
 //NOME TOKENS
@@ -11,10 +12,16 @@
 #define NUMERO 261;
 #define ARIOP 262;
 #define WHILE 263;
+#define DO 281;
+#define BEGIN 282;
+#define PROCEDURE 283;
+#define END 284;
+#define VAR 263;
+#define WHILE 263;
 #define AND 264;
 #define OR 265;
 #define NOT 266;
-#define COMENTARIO 267 //COMPLETAR TODAS
+#define COMENTARIO 267
 
 
 //ATRIBUTOS
@@ -34,11 +41,11 @@
 #define CKEY 279;
 #define BAR 280;
 
-char letras[] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','w','x','y','z',
-                'A', 'B','C','D','E','F','G','H', 'I','J','K','L','M','N','O','P','Q','R','S','T','U','W','X','Y','Z'};
+char letras[] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+                'A', 'B','C','D','E','F','G','H', 'I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
 char numeros[] = ['1','2','3','4','5','6','7','7','8','9','0'];
 char identificadores[200][2];
-char palavrasReservadas[200] = {{'WHILE', 'DO', 'IF'}; //Acrescentar todas que estão do arquivo da prof (menos os simbolos)
+char palavrasReservadas[200] = {'WHILE', 'DO', 'IF','BEGIN','END','THEN','ELSE','PROGRAM','AND','NOT','PROCEDURE','VAR'}; //Acrescentar todas que estão do arquivo da prof (menos os simbolos)
 
 struct Token{
  int nome_token;
@@ -292,25 +299,14 @@ Token proximo_token()
                     estado = 17;
                 }
                 else{
-                    int j;
-                    for(j=0; j<200; j++){
-                        if(strcmp(palavrasReservadas[j], string) != 0){ //comparar a string que achamos com as oalavras reservadas
-                            printf("<%s, >\n", palavrasReservadas[j]);
-                            token.nome_token = toupper(palavrasReservadas[j]);
-                            token.atributo = NULL;
-                            estado = 0;
-                            return(token);
-                            break;
-                        }
-                        if(strcmp(identificadores[j][0], string) != 0){ //comparar a string que achamos com os identificadores
-                            identificadores[j][0] = "linha correspondente"; //Salva a linha correspondente no array
-                            printf("<identificador, %s>\n", identificadores[j][0]);
-                            token.nome_token = ID;
-                            token.atributo = null;
-                            estado = 0;
-                            return(token);
-                            break;
-                        }
+                    estado = 18;
+                }
+                break;
+                case 18:{
+
+                }
+                else{
+  
                     }
                 }
                 break;
@@ -414,8 +410,5 @@ int main ()
 	Token token;
     code = readFile("programa.txt");
     token = proximo_token();
-    token = proximo_token();
-    //...
-
 
 }
