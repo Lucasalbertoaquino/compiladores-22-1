@@ -45,7 +45,7 @@ char letras[] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p'
                 'A', 'B','C','D','E','F','G','H', 'I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
 char numeros[] = ['1','2','3','4','5','6','7','7','8','9','0'];
 char identificadores[200][2];
-char palavrasReservadas[200] = {'WHILE', 'DO', 'IF','BEGIN','END','THEN','ELSE','PROGRAM','AND','NOT','PROCEDURE','VAR'}; //Acrescentar todas que estão do arquivo da prof (menos os simbolos)
+char palavrasReservadas[200] = {'WHILE', 'DO', 'IF','BEGIN','END','THEN','ELSE','PROGRAM','AND','NOT','PROCEDURE','VAR', 'DIV'};
 
 struct Token{
  int nome_token;
@@ -92,11 +92,11 @@ int falhar()
 	{
 	case 0: partida = 9; break; //se não for relop testa se é ariop
 
-	case 9: partida = 16; break; //se não for ariop testa se é identificador
+	case 9: partida = 13; break; //se não for ariop testa se é identificador
 
-	case 16: partida = 18; break; //se não for identificador testa se é numero
+	case 13: partida = 15; break; //se não for identificador testa se é numero
 
-	case 18: partida = 20; break; //se não for numero testa se é comentário
+	case 15: partida = 18; break; //se não for numero testa se é comentário
 
 	case 25:
 		//retornar msg de erro
@@ -216,7 +216,11 @@ Token proximo_token()
                 else if(c == '+') estado = 10;
                 else if(c == '-') estado = 11;
                 else if(c == '*') estado = 12;
-                else if(c == 'd') estado = 13;
+                else if(c == 'd') {
+                    string[i] = c;
+                    i++;
+                    estado = 13;
+                }
                 else
                 {
                     estado = falhar();
@@ -246,31 +250,11 @@ Token proximo_token()
                 estado = 0;
                 return(token);
                 break;
-            case 13:
-                cont_sim_lido++;
-                c = code[cont_sim_lido];
-                if(c == 'i') estado = 14;
-                else estado = 0;
-                break;
-            case 14:
-                cont_sim_lido++;
-                c = code[cont_sim_lido];
-                if(c == 'v') estado = 15;
-                else estado = 0;
-                break;
-            case 15:
-                cont_sim_lido++;
-                printf("<ariop, DIV>\n");
-                token.nome_token = ARIOP;
-                token.atributo = DIV;
-                estado = 0;
-                return(token);
-                break;
 
             //fim subrotina ariop
 
             //início subrotina identificador
-            case 16:
+            case 13:
                 c = code[cont_sim_lido];
                 if((c == ' ')||(c == '\n'))
                 {
@@ -279,7 +263,7 @@ Token proximo_token()
                 }
                 int posicao = strcspn(letras, c); //testar se o caracter esta presente no array de letras
                 else if(posicao<strlen(letras)){ //essa função quando não encontra o caracter ou numero encontrado retorna o tamanho do array entao testo pra ver se o valor é menor q o tam do array
-                    estado = 17;
+                    estado = 14;
                     string[i] = c;
                     i++;
                 }
@@ -288,7 +272,7 @@ Token proximo_token()
                     estado = falhar();
                 }
                 break;
-            case 17:
+            case 14:
                 cont_sim_lido++;
                 c = code[cont_sim_lido];
                 int posicaoLetras = strcspn(letras, c); //testar se o caracter esta presente no array de letras
@@ -296,24 +280,39 @@ Token proximo_token()
                 if(posicaoLetras<strlen(letras) || (posicaoNumeros<strlen(numeros)){ //essa função quando não encontra o caracter ou numero encontrado retorna o tamanho do array entao testo pra ver se o valor é menor q o tam do array
                     string[i] = c; //adiciona no array string
                     i++; // vai para a proxima prosição
-                    estado = 17;
+                    estado = 14;
                 }
                 else{
-                    estado = 18;
-                }
-                break;
-                case 18:{
-
-                }
-                else{
-  
+                    int j;
+                    for(j=0; j<200; j++){
+                        if(strcmp(palavrasReservadas[j], string) == 0){ //comparar a string que achamos com as oalavras reservadas
+                            printf("<%s, >\n", palavrasReservadas[j]);
+                            token.nome_token = toupper(palavrasReservadas[j]);
+                            token.atributo = NULL;
+                            estado = 0;
+                            return(token);
+                            break;
+                        }
+                        if(strcmp(identificadores[j][0], string) == 0){ //comparar a string que achamos com os identificadores
+                            printf("<ID, %s>\n", identificadores[j][0]);
+                            token.nome_token = ID;
+                            token.atributo = null;
+                            estado = 0;
+                            return(token);
+                            break;
+                        }
+                        else if(identificadores[j][0] == NULL){
+                            identificadores[j][0] = string;
+                            break;
+                        }
                     }
                 }
                 break;
+
             //fim subrotina identificador
 
             //início subrotina numero
-            case 18:
+            case 15:
                 c = code[cont_sim_lido];
                 if((c == ' ')||(c == '\n'))
                 {
@@ -322,7 +321,7 @@ Token proximo_token()
                 }
                 int posicaoNumeros = strcspn(numeros, c); //testar se o caracter esta presente no array de letras
                 else if(posicaoNumeros<strlen(numeros)){ //essa função quando não encontra o caracter ou numero retorna o tamanho do array entao testo pra ver se o valor é menor q o tam do array
-                    estado = 19;
+                    estado = 16;
                     string[i] = c;
                     i++;
                 }
@@ -331,27 +330,31 @@ Token proximo_token()
                     estado = falhar();
                 }
                 break;
-            case 19:
+            case 16:
                 cont_sim_lido++;
                 c = code[cont_sim_lido];
                 int posicaoNumeros = strcspn(numeros, c); //testar se o numero esta presente no array de numeros
                 if((posicaoNumeros<strlen(numeros)){ //essa função quando não encontra o numero  retorna o tamanho do array entao testo pra ver se o valor é menor q o tam do array
                     string[i] = c; //adiciona no array string
                     i++; // vai para a proxima prosição
-                    estado = 19;
+                    estado = 16;
                 }
                 else{
-                    printf("<numero, %s>\n", string);
-                    token.nome_token = NUMERO;
-                    token.atributo = string;
-                    estado = 0;
-                    return(token);
+                    estado = 25;
+                    estado = falhar();
                 }
+                break;
+            case 17:
+                printf("<numero, %s>\n", string);
+                token.nome_token = NUMERO;
+                token.atributo = string;
+                estado = 0;
+                return(token);
                 break;
             //fim subrotina numero
 
             //início subrotina comentario
-            case 20:
+            case 18:
                 c = code[cont_sim_lido];
                 if((c == ' ')||(c == '\n'))
                 {
@@ -366,7 +369,7 @@ Token proximo_token()
                     estado = falhar();
                 }
                 break;
-            case 21:
+            case 19:
                 cont_sim_lido++;
                 printf("<{, >\n");
                 token.nome_token = COMENTARIO;
@@ -374,7 +377,7 @@ Token proximo_token()
                 estado = 0;
                 return(token);
                 break;
-            case 22:
+            case 20:
                 cont_sim_lido++;
                 printf("<}, >\n");
                 token.nome_token = COMENTARIO;
@@ -382,13 +385,13 @@ Token proximo_token()
                 estado = 0;
                 return(token);
                 break;
-            case 23:
+            case 21:
                 cont_sim_lido++;
                 c = code[cont_sim_lido];
                 if(c == '/') estado = 24;
                 else estado = 0;
                 break;
-            case 24:
+            case 22:
                 cont_sim_lido++;
                 printf("<//, >\n");
                 token.nome_token = COMENTARIO;
@@ -410,5 +413,7 @@ int main ()
 	Token token;
     code = readFile("programa.txt");
     token = proximo_token();
-
+    while(token != "<., >"){ //"." delimita o final do programa
+        token = proximo_token();
+    }
 }
