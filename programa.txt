@@ -1,0 +1,6 @@
+program teste;
+begin
+    int a, b;
+    a := 10
+    b := 5
+end.
