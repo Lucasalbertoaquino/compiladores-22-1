@@ -47,7 +47,7 @@ char letras[52] = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','
                 'A', 'B','C','D','E','F','G','H', 'I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
 char numeros[10] = {'1','2','3','4','5','6','7','8','9','0'};
 char identificadores[100][200];
-char palavrasReservadas[14][100] = {"WHILE", "DO", "IF","BEGIN","END","THEN","ELSE","PROGRAM","AND","NOT","PROCEDURE","VAR","DIV"};
+char palavrasReservadas[100][100] = {"WHILE", "DO", "IF","BEGIN","END","THEN","ELSE","PROGRAM","AND","NOT","PROCEDURE","VAR","DIV", "INT","BOOLEAN","READ","WRITE","TRUE","FALSE","OR"};
 
 struct Token{
  int nome_token;
@@ -422,7 +422,173 @@ int main ()
 	Token token;
     code = readFile("programa.txt");
     token = proximo_token();
+    programa(token);
     while(token != "<., >"){ //"." delimita o final do programa
         token = proximo_token();
+    }
+}
+
+void programa(Token token){
+    if (token = "program"){
+        token = proximo_token();
+        id(token);
+        if (token = ";"){
+            token = proximo_token();
+            bloco(token);
+        }
+        else falhar();
+    }
+}
+
+void bloco(Token token){
+    if ((token = "int") || (token = "boolean")){
+        d_var(token);
+    }
+    else if (token = "procedure"){
+        d_sub(token);
+    }
+    else if (token = "begin"){
+        c_composto(token);
+    }
+    else falhar();
+}
+
+void d_var(Token token){
+    declarando_var(token);
+    if (token = ";"){
+        while(true){
+            token = proximo_token();
+            declarando_var(token);
+            if(token != ";"){
+                break;
+            }
+        }
+    }
+    else falhar();
+}
+
+void declarando_var(Token token){
+    tipo(token);
+    list_id(token);
+}
+
+void tipo(Token token){
+    if ((token = "int") || (token = "boolean")){
+        t_simples(token);
+    }
+    else if ((token = "read") || (token = "write")){
+        t_procedimento(token);
+    }
+    else if ((token = "true") || (token = "false")){
+        t_constantes(token);
+    }
+    else falhar();
+}
+
+void t_procedimento(Token token){
+    if (token = "read"){
+        token = proximo_token();
+    }
+    if (token = "write"){
+        token = proximo_token();
+    }
+    else falhar();
+}
+
+void t_constantes(Token token){
+    if (token = "true"){
+        token = proximo_token();
+    }
+    if (token = "false"){
+        token = proximo_token();
+    }
+    else falhar();
+}
+
+void list_id(Token token){
+    id(token);
+    if (token = ";"){
+        while(true){
+            token = proximo_token();
+            id(token);
+            if (token != ";"){
+                    break;
+            }
+        }
+    }
+    else falhar();
+}
+
+void d_sub(Token token){
+    while(true){
+        d_procedimento(token);
+        if (token != ";"){
+            falhar();
+        }
+        token = proximo_token();
+        if (token != "procedure"){
+            break;
+        }
+    }
+}
+
+void d_procedimento(Token token){
+    if (token = "procedure"){
+        token = proximo_token();
+        id(token);
+        if (token = "("){
+            p_formais(token);
+        }
+        else if (token = ";"){
+            token = proximo_token();
+            bloco(token);
+        }
+        else falhar();
+    }
+}
+
+void p_formais(Token token){
+    if (token = "("){
+        token = proximo_token();
+        s_p_formais(token);
+        if (token = ";"){
+            token = proximo_token();
+            s_p_formais(token);
+        }
+        if (token != ")"){
+            falhar();
+        }
+    }
+}
+
+void s_p_formais(Token token){
+    if (token = "var"){
+        token = proximo_token();
+        list_id(token);
+        if (token = ":"){
+            token = proximo_token();
+            id(token);
+        }
+        else falhar();
+    }
+}
+
+void c_composto(Token token){
+    if (token = "begin"){
+        token = proximo_token();
+        comando(token);
+        if (token = ";"){
+            while(true){
+                token = proximo_token();
+                comando(token);
+                if (token != ";"){
+                    break;
+                }
+            }
+        }
+        if (token != "end"){
+            falhar();
+        }
+        else falhar();
     }
 }
