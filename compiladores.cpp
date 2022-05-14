@@ -592,3 +592,76 @@ void c_composto(Token token){
         else falhar();
     }
 }
+
+void PROGRAM(){
+	obter_token();
+	if (token = "program"){
+        obter_token();
+        }
+	else {printf("Erro: program esperado");
+        ERRO(firstId);
+        }
+    if (token = ';'){
+        obter_token();
+    }
+    else {printf("Erro: ; esperado");
+        ERRO(firstBloco);
+        }
+    if (token = "."){
+        obter_token();
+    }
+    else {
+        printf("Erro: . esperado");
+        }
+    }
+    
+void BLOCO():
+	if (token = "int" || token = "boolean" || token = "read" || token = "write" || token = "true"|| token = "false"){
+	D_VAR(); = token}
+	else{printf("Erro: int ou boolean ou read ou write true ou false esperado");
+        ERRO(firstDSub);}
+	else if (token = "procedure"){
+        D_SUB(); = token}
+    else{printf("Erro: procedure esperado");
+        ERRO(firstCComposto)}
+	else if (token = "begin"){
+		C_COMPOSTO(); = token}
+	else{printf("Erro: begin esperado");}
+
+void D_VAR():
+	DECLARANDO_VAR();
+    if (token = ';'){
+        while(true){
+        obter_token();
+        if (token != ';'){ 
+        break;}
+    }
+    else {printf("Erro: ; esperado");
+    ERRO(firstTipo)}
+
+void DECLARANDO_VAR():
+	TIPO = token();
+	LIST_ID = token();
+
+void TIPO():
+	if (token = "int" || token = "boolean"){
+		T_SIMPLES() = token;
+	}
+	else if (token = "read" || token = "wright"){
+		T_PROCEDIMENTO() = token;
+	}
+	else if token = "true" || token = “false”{
+		T_CONSTANTES() = token;
+	}
+	else{printf("Erro: int ou boolean ou read ou write true ou false esperado")
+	ERRO(firstListId);}
+
+void T_SIMPLES():
+    if (token = "int"){
+        obter_token();
+        }
+	else if (token = "boolen"){
+        obter_token();}
+	else {printf("Erro: int ou boolean esperado"); 
+        ERRO(firstTprocedimento);
+    }
